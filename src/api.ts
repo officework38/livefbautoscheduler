@@ -13,25 +13,104 @@ export async function fetchAppState(): Promise<AppStateResponse> {
   return handleJson<AppStateResponse>(res);
 }
 
-export async function connectMetaAccount(accessToken: string): Promise<AppStateResponse> {
-  const res = await fetch('/api/meta/connect', {
+export async function openCloudBrowser(): Promise<AppStateResponse> {
+  const res = await fetch('/api/browser/open', {method: 'POST'});
+  return handleJson<AppStateResponse>(res);
+}
+
+export async function closeCloudBrowser(): Promise<AppStateResponse> {
+  const res = await fetch('/api/browser/close', {method: 'POST'});
+  return handleJson<AppStateResponse>(res);
+}
+
+export async function switchBrowserProfile(profileName: string): Promise<AppStateResponse> {
+  const res = await fetch('/api/browser/profile', {
     method: 'POST',
     headers: {'Content-Type': 'application/json'},
-    body: JSON.stringify({accessToken}),
+    body: JSON.stringify({profileName}),
   });
   return handleJson<AppStateResponse>(res);
 }
 
-export async function disconnectMetaAccount(): Promise<AppStateResponse> {
-  const res = await fetch('/api/meta/disconnect', {method: 'POST'});
+export async function importBrowserCookies(cookies: string): Promise<AppStateResponse> {
+  const res = await fetch('/api/browser/cookies', {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({cookies}),
+  });
   return handleJson<AppStateResponse>(res);
+}
+
+export async function fetchPagesSystemB(): Promise<AppStateResponse> {
+  const res = await fetch('/api/browser/fetch-pages', {method: 'POST'});
+  return handleJson<AppStateResponse>(res);
+}
+
+export async function fetchBrowserViewport(): Promise<{
+  imageBase64: string;
+  url: string;
+  loggedIn: boolean;
+}> {
+  const res = await fetch('/api/browser/viewport');
+  return handleJson(res);
+}
+
+export async function sendBrowserClick(x: number, y: number): Promise<{
+  imageBase64: string;
+  url: string;
+  loggedIn: boolean;
+}> {
+  const res = await fetch('/api/browser/click', {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({x, y}),
+  });
+  return handleJson(res);
+}
+
+export async function sendBrowserText(text: string): Promise<{
+  imageBase64: string;
+  url: string;
+  loggedIn: boolean;
+}> {
+  const res = await fetch('/api/browser/type', {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({text}),
+  });
+  return handleJson(res);
+}
+
+export async function sendBrowserKey(key: string): Promise<{
+  imageBase64: string;
+  url: string;
+  loggedIn: boolean;
+}> {
+  const res = await fetch('/api/browser/key', {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({key}),
+  });
+  return handleJson(res);
+}
+
+export async function sendBrowserScroll(deltaY: number): Promise<{
+  imageBase64: string;
+  url: string;
+  loggedIn: boolean;
+}> {
+  const res = await fetch('/api/browser/scroll', {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({deltaY}),
+  });
+  return handleJson(res);
 }
 
 export async function addManualPage(payload: {
   name: string;
   type: TargetType;
   url: string;
-  caption?: string;
 }): Promise<AppStateResponse> {
   const res = await fetch('/api/pages', {
     method: 'POST',
@@ -47,8 +126,6 @@ export async function updatePageRow(
     caption?: string;
     scheduleDate?: string;
     scheduleTime?: string;
-    mediaUrl?: string;
-    mediaName?: string;
   }
 ): Promise<AppStateResponse> {
   const res = await fetch(`/api/pages/${encodeURIComponent(id)}`, {

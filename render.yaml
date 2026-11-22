@@ -1,14 +1,12 @@
 services:
   - type: web
-    name: social-auto-scheduler-cloud
-    runtime: node
+    name: fb-insta-pro-auto-scheduler
+    runtime: docker
     plan: free
-    buildCommand: npm install && npm run build
-    startCommand: npm start
     envVars:
       - key: NODE_ENV
         value: production
-      - key: META_ACCESS_TOKEN
-        sync: false
+      - key: PORT
+        value: "3000"
       - key: GITHUB_TOKEN
         sync: false

@@ -1,4 +1,4 @@
-export type TargetType = 'Personal' | 'Page' | 'Instagram';
+export type TargetType = 'Personal' | 'Page';
 export type ExecutionMode = 'Mode 1' | 'Mode 2' | 'Mode 3' | 'Mode 4';
 export type MediaKind = 'none' | 'video' | 'image';
 export type QueueStatus = 'queued' | 'running' | 'completed' | 'failed';
@@ -9,10 +9,7 @@ export interface PageTarget {
   name: string;
   type: TargetType;
   url: string;
-  pageId?: string;
-  igAccountId?: string;
-  hasLiveToken?: boolean;
-  mediaUrl: string;
+  mediaPath: string;
   mediaName: string;
   mediaType: MediaKind;
   caption: string;
@@ -26,10 +23,7 @@ export interface QueuedTarget {
   name: string;
   type: TargetType;
   url: string;
-  pageId?: string;
-  igAccountId?: string;
-  hasLiveToken?: boolean;
-  mediaUrl: string;
+  mediaPath: string;
   mediaName: string;
   mediaType: MediaKind;
   caption: string;
@@ -54,17 +48,20 @@ export interface ExecutionProof {
   mode: ExecutionMode;
   caption: string;
   mediaName: string;
-  mediaUrl: string;
-  status: 'published-live' | 'verified-cloud-run' | 'failed';
-  postId?: string;
-  commentId?: string;
+  screenshotUrl: string;
+  status: 'completed' | 'failed';
   executedAt: string;
   note: string;
 }
 
-export interface ConnectionStatus {
-  metaConnected: boolean;
-  metaUserName: string;
+export interface BrowserSessionStatus {
+  browserOpen: boolean;
+  browserBusy: boolean;
+  loggedIn: boolean;
+  currentUrl: string;
+  activeProfile: string;
+  availableProfiles: string[];
+  cookieSummary: string;
   githubConnected: boolean;
   githubUserName: string;
 }
@@ -77,7 +74,7 @@ export interface AppStateResponse {
   timezoneOffsetMinutes: number;
   logs: LogEntry[];
   proofs: ExecutionProof[];
-  connections: ConnectionStatus;
+  browser: BrowserSessionStatus;
   liveAppUrl: string;
   canUndoPages: boolean;
   canUndoQueue: boolean;

@@ -1,5 +1,5 @@
 import React, {useState} from 'react';
-import {CheckCircle2, Play, Square, Trash2, Undo2, Zap} from 'lucide-react';
+import {CheckCircle2, ExternalLink, Play, Square, Trash2, Undo2, Zap} from 'lucide-react';
 import type {AppStateResponse, ExecutionMode, QueuedTarget} from '../types';
 import {
   deleteQueueRow,
@@ -19,10 +19,10 @@ interface SchedulerSectionProps {
 }
 
 const MODES: Array<{id: ExecutionMode; title: string; detail: string}> = [
-  {id: 'Mode 1', title: 'Mode 1 · Reel + Synced Comment', detail: 'Uploads video reel and auto-posts caption as first comment.'},
-  {id: 'Mode 2', title: 'Mode 2 · Shield & Reel Comment', detail: 'Runs session shield verification before reel publish & comment.'},
-  {id: 'Mode 3', title: 'Mode 3 · Feed Post & Comment', detail: 'Publishes feed post and attaches synced first comment.'},
-  {id: 'Mode 4', title: 'Mode 4 · Photo Post & Refresh', detail: 'Publishes photo post, refreshes feed, and adds photo comment.'},
+  {id: 'Mode 1', title: 'Mode 1 · Reel + Synced Comment', detail: 'Uploads video reel via composer and comments on first reel.'},
+  {id: 'Mode 2', title: 'Mode 2 · App34 Shield & Reel', detail: 'Cookie shield check + reel/photo publish + synced reel comment.'},
+  {id: 'Mode 3', title: 'Mode 3 · App28 Post & Comment', detail: 'Publishes feed post, refreshes page, and posts feed comment.'},
+  {id: 'Mode 4', title: 'Mode 4 · Photo Post & Refresh', detail: 'Publishes photo post, opens Photos tab photo.php, and comments.'},
 ];
 
 export const SchedulerSection: React.FC<SchedulerSectionProps> = ({
@@ -41,7 +41,7 @@ export const SchedulerSection: React.FC<SchedulerSectionProps> = ({
     try {
       const next = await setExecutionMode(mode);
       onStateChange(next);
-      onNotify(`Switched execution strategy to ${mode}.`, 'info');
+      onNotify(`Active mode set to ${mode}.`, 'info');
     } catch (err) {
       onNotify(err instanceof Error ? err.message : 'Mode update failed.', 'error');
     }
@@ -51,7 +51,7 @@ export const SchedulerSection: React.FC<SchedulerSectionProps> = ({
     try {
       const next = start ? await startSchedulerEngine() : await stopSchedulerEngine();
       onStateChange(next);
-      onNotify(start ? '24/7 Cloud Auto-Scheduler started.' : 'Auto-Scheduler stopped.', start ? 'success' : 'info');
+      onNotify(start ? 'System B Auto-Scheduler started.' : 'Auto-Scheduler stopped.', start ? 'success' : 'info');
     } catch (err) {
       onNotify(err instanceof Error ? err.message : 'Engine toggle failed.', 'error');
     }
@@ -59,14 +59,14 @@ export const SchedulerSection: React.FC<SchedulerSectionProps> = ({
 
   async function handleExecuteSelected() {
     if (!selectedJob) {
-      onNotify('Select a target row from the queue first.', 'error');
+      onNotify('Select a target row from the scheduler table first.', 'error');
       return;
     }
     setBusy(true);
     try {
       const next = await executeQueueOne(selectedJob.id);
       onStateChange(next);
-      onNotify(`Executed "${selectedJob.name}" — see Live Terminal or Proofs below.`, 'success');
+      onNotify(`Executed "${selectedJob.name}" inside Cloud Browser!`, 'success');
       onNavigate('terminal');
     } catch (err) {
       onNotify(err instanceof Error ? err.message : 'Execution failed.', 'error');
@@ -77,14 +77,14 @@ export const SchedulerSection: React.FC<SchedulerSectionProps> = ({
 
   async function handleExecuteAll() {
     if (state.queue.length === 0) {
-      onNotify('No targets in Scheduler queue.', 'error');
+      onNotify('No pages available in Scheduler table.', 'error');
       return;
     }
     setBusy(true);
     try {
       const next = await executeQueueAll();
       onStateChange(next);
-      onNotify('Batch execution finished for all queued targets.', 'success');
+      onNotify('Batch posting session finished.', 'success');
       onNavigate('terminal');
     } catch (err) {
       onNotify(err instanceof Error ? err.message : 'Batch execution failed.', 'error');
@@ -97,7 +97,7 @@ export const SchedulerSection: React.FC<SchedulerSectionProps> = ({
     try {
       const next = await deleteQueueRow(id);
       onStateChange(next);
-      onNotify('Target removed from queue.', 'info');
+      onNotify('Removed target from Scheduler.', 'info');
     } catch (err) {
       onNotify(err instanceof Error ? err.message : 'Delete failed.', 'error');
     }
@@ -107,7 +107,7 @@ export const SchedulerSection: React.FC<SchedulerSectionProps> = ({
     try {
       const next = await undoQueueDelete();
       onStateChange(next);
-      onNotify('Restored target to queue.', 'success');
+      onNotify('Restored target to Scheduler.', 'success');
     } catch (err) {
       onNotify(err instanceof Error ? err.message : 'Nothing to undo.', 'info');
     }
@@ -119,10 +119,10 @@ export const SchedulerSection: React.FC<SchedulerSectionProps> = ({
         <div className="flex flex-wrap items-center justify-between gap-4 mb-4">
           <div>
             <h2 className="text-base font-semibold text-slate-100">
-              Execution Strategy & 24/7 Cloud Engine
+              RPA Execution Mode & Background Engine (System B)
             </h2>
             <p className="text-xs text-slate-400 mt-0.5">
-              Polls queued schedules every 5 seconds on the server — keeps running even when your phone or PC is off.
+              Polls queued targets every 5 seconds and runs real Cloud Chromium automation automatically.
             </p>
           </div>
 
@@ -177,7 +177,7 @@ export const SchedulerSection: React.FC<SchedulerSectionProps> = ({
               <div>
                 <h3 className="text-base font-semibold text-slate-100">Armed Target Queue</h3>
                 <p className="text-xs text-slate-400 mt-0.5">
-                  Click any row to inspect attached media and schedule details.
+                  Click any row to inspect assigned media and caption details.
                 </p>
               </div>
               <div className="flex flex-wrap items-center gap-2">
@@ -188,7 +188,7 @@ export const SchedulerSection: React.FC<SchedulerSectionProps> = ({
                   className="inline-flex items-center gap-1.5 bg-emerald-600 hover:bg-emerald-500 disabled:opacity-50 text-white text-xs font-semibold px-3.5 py-2 rounded-lg transition-colors whitespace-nowrap cursor-pointer"
                 >
                   <Zap className="w-3.5 h-3.5" />
-                  Execute Selected Now
+                  {busy ? 'Running RPA...' : 'Execute Selected Now'}
                 </button>
                 <button
                   type="button"
@@ -196,7 +196,7 @@ export const SchedulerSection: React.FC<SchedulerSectionProps> = ({
                   onClick={handleExecuteAll}
                   className="inline-flex items-center gap-1.5 bg-indigo-600 hover:bg-indigo-500 disabled:opacity-50 text-white text-xs font-semibold px-3.5 py-2 rounded-lg transition-colors whitespace-nowrap cursor-pointer"
                 >
-                  Execute All Now
+                  Execute ALL Pages Now
                 </button>
                 <button
                   type="button"
@@ -214,9 +214,9 @@ export const SchedulerSection: React.FC<SchedulerSectionProps> = ({
               <table className="w-full text-left border-collapse">
                 <thead>
                   <tr className="border-b border-slate-800 text-xs font-medium text-slate-400">
-                    <th className="py-2.5 pr-3">Target</th>
+                    <th className="py-2.5 pr-3">Real Target / Page Name</th>
                     <th className="py-2.5 px-3">Mode</th>
-                    <th className="py-2.5 px-3">Media</th>
+                    <th className="py-2.5 px-3">Assigned Media</th>
                     <th className="py-2.5 px-3">Scheduled</th>
                     <th className="py-2.5 px-3">Status</th>
                     <th className="py-2.5 pl-3 text-right">Remove</th>
@@ -226,7 +226,7 @@ export const SchedulerSection: React.FC<SchedulerSectionProps> = ({
                   {state.queue.length === 0 ? (
                     <tr>
                       <td colSpan={6} className="py-10 text-center text-slate-500">
-                        Queue is empty. Configure pages in Pages & Media Studio and click "Proceed to Master Scheduler".
+                        Queue is empty. Go to Pages & Media and click "Proceed to Master Scheduler".
                       </td>
                     </tr>
                   ) : (
@@ -246,7 +246,7 @@ export const SchedulerSection: React.FC<SchedulerSectionProps> = ({
                           </td>
                           <td className="py-3 px-3 text-xs text-slate-300 whitespace-nowrap">{q.mode}</td>
                           <td className="py-3 px-3 text-xs font-mono text-slate-300 max-w-[160px] truncate">
-                            {q.mediaUrl ? q.mediaName || q.mediaUrl : 'Text Only'}
+                            {q.mediaPath ? q.mediaName || q.mediaPath : 'Not Assigned'}
                           </td>
                           <td className="py-3 px-3 text-xs font-mono tabular-nums text-slate-300 whitespace-nowrap">
                             {q.scheduleDate} · {q.scheduleTime}
@@ -297,7 +297,7 @@ export const SchedulerSection: React.FC<SchedulerSectionProps> = ({
                 <div className="space-y-1">
                   <div className="text-slate-500">Scheduled Trigger</div>
                   <div className="font-mono tabular-nums text-slate-200">
-                    {selectedJob.scheduleDate} at {selectedJob.scheduleTime}
+                    {selectedJob.scheduleDate} {selectedJob.scheduleTime}
                   </div>
                 </div>
                 <div className="space-y-1">
@@ -307,17 +307,17 @@ export const SchedulerSection: React.FC<SchedulerSectionProps> = ({
                   </div>
                 </div>
                 <div className="space-y-1.5">
-                  <div className="text-slate-500">Cloud Media Preview</div>
-                  {selectedJob.mediaUrl && selectedJob.mediaType === 'image' ? (
+                  <div className="text-slate-500">Assigned Media Preview</div>
+                  {selectedJob.mediaPath && selectedJob.mediaType === 'image' ? (
                     <img
-                      src={selectedJob.mediaUrl}
+                      src={selectedJob.mediaPath}
                       alt={selectedJob.mediaName}
                       referrerPolicy="no-referrer"
                       className="w-full h-40 object-cover rounded-lg border border-slate-800"
                     />
-                  ) : selectedJob.mediaUrl && selectedJob.mediaType === 'video' ? (
+                  ) : selectedJob.mediaPath && selectedJob.mediaType === 'video' ? (
                     <video
-                      src={selectedJob.mediaUrl}
+                      src={selectedJob.mediaPath}
                       controls
                       className="w-full h-40 object-cover rounded-lg border border-slate-800 bg-black"
                     />
@@ -330,7 +330,7 @@ export const SchedulerSection: React.FC<SchedulerSectionProps> = ({
               </div>
             ) : (
               <p className="text-xs text-slate-500 mt-4">
-                Select a target row from the queue to inspect its media and payload.
+                Select a target row from the queue to inspect its media and text.
               </p>
             )}
           </div>
@@ -340,13 +340,13 @@ export const SchedulerSection: React.FC<SchedulerSectionProps> = ({
       <section className="bg-[#0f172a] border border-slate-800 rounded-xl p-5">
         <div className="flex items-center justify-between gap-4 mb-4">
           <div>
-            <h3 className="text-base font-semibold text-slate-100">Execution Proofs History</h3>
+            <h3 className="text-base font-semibold text-slate-100">Execution Proofs & Screenshots</h3>
             <p className="text-xs text-slate-400 mt-0.5">
-              Completed cloud runs and verified Meta Graph API post receipts
+              Real browser screenshots captured automatically after each target completes
             </p>
           </div>
           <span className="text-xs font-mono tabular-nums text-slate-400">
-            {state.proofs.length} Record(s)
+            {state.proofs.length} Proof(s)
           </span>
         </div>
 
@@ -357,15 +357,15 @@ export const SchedulerSection: React.FC<SchedulerSectionProps> = ({
                 <th className="py-2 pr-4">Executed At</th>
                 <th className="py-2 px-3">Target</th>
                 <th className="py-2 px-3">Mode</th>
-                <th className="py-2 px-3">Result</th>
-                <th className="py-2 pl-3">Details / Post ID</th>
+                <th className="py-2 px-3">Status</th>
+                <th className="py-2 pl-3 text-right">Browser Proof</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-800/70 text-xs">
               {state.proofs.length === 0 ? (
                 <tr>
                   <td colSpan={5} className="py-8 text-center text-slate-500">
-                    No executions recorded yet. Run a target above to capture an execution proof.
+                    No execution proofs yet. Run a target above to capture a live browser screenshot.
                   </td>
                 </tr>
               ) : (
@@ -379,20 +379,29 @@ export const SchedulerSection: React.FC<SchedulerSectionProps> = ({
                     </td>
                     <td className="py-2.5 px-3 text-slate-300 whitespace-nowrap">{pr.mode}</td>
                     <td className="py-2.5 px-3 whitespace-nowrap">
-                      {pr.status === 'published-live' ? (
+                      {pr.status === 'completed' ? (
                         <span className="inline-flex items-center gap-1 text-emerald-400 font-medium">
                           <CheckCircle2 className="w-3.5 h-3.5" />
-                          Published Live
+                          Completed
                         </span>
-                      ) : pr.status === 'verified-cloud-run' ? (
-                        <span className="text-indigo-400 font-medium">Verified Cloud Run</span>
                       ) : (
-                        <span className="text-rose-400 font-medium">Failed</span>
+                        <span className="text-rose-400 font-medium">Failed: {pr.note}</span>
                       )}
                     </td>
-                    <td className="py-2.5 pl-3 text-slate-400">
-                      {pr.postId ? `Post ID: ${pr.postId} — ` : ''}
-                      {pr.note}
+                    <td className="py-2.5 pl-3 text-right whitespace-nowrap">
+                      {pr.screenshotUrl ? (
+                        <a
+                          href={pr.screenshotUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center gap-1 text-indigo-400 hover:text-indigo-300 font-medium"
+                        >
+                          <ExternalLink className="w-3.5 h-3.5" />
+                          View Screenshot
+                        </a>
+                      ) : (
+                        <span className="text-slate-500">—</span>
+                      )}
                     </td>
                   </tr>
                 ))

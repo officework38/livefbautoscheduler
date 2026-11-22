@@ -15,10 +15,10 @@ export const DeploySection: React.FC<DeploySectionProps> = ({
   onNotify,
 }) => {
   const [githubToken, setGithubToken] = useState('');
-  const [repoName, setRepoName] = useState('social-auto-scheduler-cloud');
+  const [repoName, setRepoName] = useState('fb-insta-pro-auto-scheduler');
   const [branch, setBranch] = useState('main');
   const [isPrivate, setIsPrivate] = useState(false);
-  const [commitMessage, setCommitMessage] = useState('Deploy Social Auto-Scheduler Cloud');
+  const [commitMessage, setCommitMessage] = useState('Deploy FB & Insta Pro Auto-Scheduler Cloud');
 
   const [verifying, setVerifying] = useState(false);
   const [pushing, setPushing] = useState(false);
@@ -117,7 +117,7 @@ export const DeploySection: React.FC<DeploySectionProps> = ({
               Live Cloud Access Link (No PC Needed)
             </h2>
             <p className="text-sm text-slate-400 mt-1">
-              Open this link from any phone, tablet, or browser to manage pages, upload media, and run scheduled posts 24/7.
+              Open this link from any phone, tablet, or browser to sign into Facebook inside Cloud Browser and run scheduled posts 24/7.
             </p>
           </div>
           <div className="flex items-center gap-2">
@@ -154,12 +154,12 @@ export const DeploySection: React.FC<DeploySectionProps> = ({
                 Push Code to GitHub & Go Live
               </h3>
               <p className="text-xs text-slate-400 mt-1">
-                Creates or updates your GitHub repository directly via GitHub API with Docker, Render blueprint, and GitHub Actions CI included.
+                Creates or updates your GitHub repository directly with Cloud Chromium Dockerfile, Render blueprint, and your original Python script included.
               </p>
             </div>
-            {state.connections.githubConnected && (
+            {state.browser.githubConnected && (
               <span className="text-xs text-emerald-400 font-medium whitespace-nowrap">
-                @{state.connections.githubUserName}
+                @{state.browser.githubUserName}
               </span>
             )}
           </div>
@@ -176,7 +176,7 @@ export const DeploySection: React.FC<DeploySectionProps> = ({
                   value={githubToken}
                   onChange={(e) => setGithubToken(e.target.value)}
                   placeholder={
-                    state.connections.githubConnected
+                    state.browser.githubConnected
                       ? 'Token active in server memory (paste new to switch)'
                       : 'ghp_... or github_pat_...'
                   }
@@ -290,10 +290,10 @@ export const DeploySection: React.FC<DeploySectionProps> = ({
             <div className="flex flex-wrap items-center justify-between gap-2 mb-3">
               <div>
                 <h3 className="text-base font-semibold text-slate-100">
-                  Included Cloud Deployment Blueprints
+                  Cloud Chromium Deployment Blueprints
                 </h3>
                 <p className="text-xs text-slate-400 mt-0.5">
-                  Automatically pushed with your repository for 24/7 hosting
+                  Automatically pushed with your repository so Cloud Browser runs 24/7
                 </p>
               </div>
               <div className="flex items-center gap-1 p-1 bg-[#0b1120] border border-slate-800 rounded-lg">
@@ -336,7 +336,7 @@ export const DeploySection: React.FC<DeploySectionProps> = ({
             <div className="font-medium text-slate-200">Quick Cloud Go-Live Steps:</div>
             <p>1. Enter your GitHub Personal Access Token above and click Create Repo & Push to GitHub.</p>
             <p>2. Click Deploy Live on Render (or connect the GitHub repo in Railway / Cloud Run).</p>
-            <p>3. Use your live HTTPS link from any phone or browser — zero PC needed.</p>
+            <p>3. Open the live link from any phone or browser and log into Facebook inside Tab 01.</p>
           </div>
         </section>
       </div>

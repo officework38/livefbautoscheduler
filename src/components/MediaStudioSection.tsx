@@ -3,7 +3,6 @@ import {
   ArrowRight,
   CalendarClock,
   FileText,
-  Link2,
   Pencil,
   Trash2,
   Undo2,
@@ -48,7 +47,6 @@ export const MediaStudioSection: React.FC<MediaStudioSectionProps> = ({
   const [editCaption, setEditCaption] = useState('');
   const [editDate, setEditDate] = useState('');
   const [editTime, setEditTime] = useState('');
-  const [editMediaUrl, setEditMediaUrl] = useState('');
 
   const mediaInputRef = useRef<HTMLInputElement | null>(null);
   const txtInputRef = useRef<HTMLInputElement | null>(null);
@@ -105,7 +103,7 @@ export const MediaStudioSection: React.FC<MediaStudioSectionProps> = ({
     try {
       const res = await uploadCloudMedia(file, targetIds);
       onStateChange(res.state);
-      onNotify(`Uploaded "${res.filename}" to cloud storage and assigned to target(s).`, 'success');
+      onNotify(`Uploaded "${res.filename}" and assigned to target(s).`, 'success');
     } catch (err) {
       onNotify(err instanceof Error ? err.message : 'Media upload failed.', 'error');
     } finally {
@@ -122,7 +120,7 @@ export const MediaStudioSection: React.FC<MediaStudioSectionProps> = ({
       const text = await file.text();
       const next = await importTxtMediaList(text);
       onStateChange(next);
-      onNotify(`Imported media URLs from "${file.name}".`, 'success');
+      onNotify(`Imported media list from "${file.name}".`, 'success');
     } catch (err) {
       onNotify(err instanceof Error ? err.message : 'Could not import .txt file.', 'error');
     }
@@ -176,7 +174,6 @@ export const MediaStudioSection: React.FC<MediaStudioSectionProps> = ({
     setEditCaption(row.caption);
     setEditDate(row.scheduleDate);
     setEditTime(row.scheduleTime);
-    setEditMediaUrl(row.mediaUrl);
   }
 
   async function saveRowEdits(e: React.FormEvent) {
@@ -187,7 +184,6 @@ export const MediaStudioSection: React.FC<MediaStudioSectionProps> = ({
         caption: editCaption,
         scheduleDate: editDate,
         scheduleTime: editTime,
-        mediaUrl: editMediaUrl,
       });
       onStateChange(next);
       setEditingRow(null);
@@ -286,7 +282,7 @@ export const MediaStudioSection: React.FC<MediaStudioSectionProps> = ({
           </div>
 
           <div className="flex items-center justify-between gap-3 mt-4">
-            <span className="text-xs text-slate-500">Syncs with browser timezone automatically</span>
+            <span className="text-xs text-slate-500">Syncs with your local timezone automatically</span>
             <button
               type="button"
               onClick={handleApplySchedule}
@@ -303,10 +299,10 @@ export const MediaStudioSection: React.FC<MediaStudioSectionProps> = ({
         <div className="flex flex-wrap items-center justify-between gap-3 pb-4 border-b border-slate-800">
           <div>
             <h2 className="text-base font-semibold text-slate-100">
-              Fetched Pages & Media Assignment Matrix
+              Fetched Real Pages & Media Assignment Matrix
             </h2>
             <p className="text-xs text-slate-400 mt-0.5">
-              Upload videos or photos directly to cloud storage, or import a .txt list of public media URLs.
+              Upload your videos/photos here so the Cloud Browser can upload them directly into Facebook.
             </p>
           </div>
 
@@ -330,7 +326,7 @@ export const MediaStudioSection: React.FC<MediaStudioSectionProps> = ({
               className="inline-flex items-center gap-1.5 bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-medium px-3.5 py-2 rounded-lg transition-colors whitespace-nowrap shrink-0 cursor-pointer"
             >
               <FileText className="w-3.5 h-3.5" />
-              Import .txt URL List
+              Import .txt List
             </button>
 
             <button
@@ -376,9 +372,9 @@ export const MediaStudioSection: React.FC<MediaStudioSectionProps> = ({
                     className="rounded border-slate-700 bg-slate-900 text-indigo-500"
                   />
                 </th>
-                <th className="py-2.5 pr-4">Profile / Page Name</th>
+                <th className="py-2.5 pr-4">Profile / Real Page Name</th>
                 <th className="py-2.5 px-3">Type</th>
-                <th className="py-2.5 px-3">Cloud Media / URL</th>
+                <th className="py-2.5 px-3">Assigned Media File</th>
                 <th className="py-2.5 px-3">Post Text / Caption</th>
                 <th className="py-2.5 px-3">Schedule</th>
                 <th className="py-2.5 pl-3 text-right">Actions</th>
@@ -388,7 +384,7 @@ export const MediaStudioSection: React.FC<MediaStudioSectionProps> = ({
               {state.pages.length === 0 ? (
                 <tr>
                   <td colSpan={7} className="py-10 text-center text-slate-500">
-                    No pages in matrix. Go to Accounts & Meta API to fetch or add pages.
+                    No pages in matrix. Go to Browser & Profile to fetch or add pages.
                   </td>
                 </tr>
               ) : (
@@ -406,8 +402,8 @@ export const MediaStudioSection: React.FC<MediaStudioSectionProps> = ({
                     <td className="py-3 pr-4 font-medium text-slate-100 whitespace-nowrap">{row.name}</td>
                     <td className="py-3 px-3 text-xs text-slate-400 whitespace-nowrap">{row.type}</td>
                     <td className="py-3 px-3 text-xs font-mono text-slate-300 max-w-[200px] truncate">
-                      {row.mediaUrl ? (
-                        <span className="text-emerald-400">{row.mediaName || row.mediaUrl}</span>
+                      {row.mediaPath ? (
+                        <span className="text-emerald-400">{row.mediaName || row.mediaPath}</span>
                       ) : (
                         <span className="text-slate-500">Not Assigned</span>
                       )}
@@ -431,7 +427,7 @@ export const MediaStudioSection: React.FC<MediaStudioSectionProps> = ({
                         </button>
                         <button
                           type="button"
-                          title="Edit caption, schedule, or URL"
+                          title="Edit caption or schedule"
                           onClick={() => openEditModal(row)}
                           className="p-1.5 rounded-md bg-slate-800 hover:bg-slate-700 text-slate-200 cursor-pointer"
                         >
@@ -470,21 +466,6 @@ export const MediaStudioSection: React.FC<MediaStudioSectionProps> = ({
                   onChange={(e) => setEditCaption(e.target.value)}
                   className="w-full bg-[#0b1120] border border-slate-800 focus:border-indigo-500 focus:outline-none rounded-lg px-3 py-2 text-sm text-slate-100"
                 />
-              </div>
-              <div>
-                <label className="block text-xs text-slate-400 mb-1">
-                  Public Media URL (or leave uploaded path)
-                </label>
-                <div className="relative">
-                  <Link2 className="w-4 h-4 text-slate-500 absolute left-3 top-1/2 -translate-y-1/2" />
-                  <input
-                    type="text"
-                    value={editMediaUrl}
-                    onChange={(e) => setEditMediaUrl(e.target.value)}
-                    placeholder="https://example.com/video.mp4 or /uploads/..."
-                    className="w-full bg-[#0b1120] border border-slate-800 focus:border-indigo-500 focus:outline-none rounded-lg pl-9 pr-3 py-2 text-sm text-slate-100 font-mono"
-                  />
-                </div>
               </div>
               <div className="grid grid-cols-2 gap-3">
                 <div>

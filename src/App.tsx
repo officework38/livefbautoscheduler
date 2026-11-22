@@ -32,10 +32,10 @@ const NAV_ITEMS: Array<{
   sub: string;
   icon: typeof Globe;
 }> = [
-  {key: 'accounts', label: '01. Accounts & Meta API', sub: 'Fetch Pages & Profiles', icon: Globe},
-  {key: 'media', label: '02. Pages & Media', sub: 'Captions & Cloud Uploads', icon: Film},
+  {key: 'accounts', label: '01. Browser & Profile', sub: 'Setup & Fetch Pages', icon: Globe},
+  {key: 'media', label: '02. Pages & Media', sub: 'Bulk Caption & Video', icon: Film},
   {key: 'scheduler', label: '03. Master Scheduler', sub: 'Modes 1–4 & Auto-Run', icon: CalendarClock},
-  {key: 'terminal', label: '04. Live Terminal', sub: 'Server Execution Logs', icon: Terminal},
+  {key: 'terminal', label: '04. Live RPA Terminal', sub: 'Real-Time Logs', icon: Terminal},
   {key: 'deploy', label: '05. GitHub & Live Link', sub: 'Push Repo & Cloud Host', icon: GitBranch},
 ];
 
@@ -71,17 +71,19 @@ export default function App() {
     void refreshState();
   }, [refreshState]);
 
-  // Poll server state every 3s while engine is running or viewing live terminal/scheduler
   useEffect(() => {
-    const shouldPoll = state?.engineRunning || activeTab === 'terminal' || activeTab === 'scheduler';
+    const shouldPoll =
+      state?.engineRunning ||
+      state?.browser.browserBusy ||
+      activeTab === 'terminal' ||
+      activeTab === 'scheduler';
     if (!shouldPoll) return;
     const timer = setInterval(() => {
       void refreshState();
     }, 3000);
     return () => clearInterval(timer);
-  }, [state?.engineRunning, activeTab, refreshState]);
+  }, [state?.engineRunning, state?.browser.browserBusy, activeTab, refreshState]);
 
-  // Live clock
   useEffect(() => {
     const timer = setInterval(() => {
       setClockText(new Date().toLocaleTimeString([], {hour12: false}));
@@ -89,7 +91,6 @@ export default function App() {
     return () => clearInterval(timer);
   }, []);
 
-  // Global Ctrl+Z undo handler
   useEffect(() => {
     const onKeyDown = (e: KeyboardEvent) => {
       if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'z') {
@@ -125,7 +126,7 @@ export default function App() {
         : await startSchedulerEngine();
       setState(next);
       notify(
-        next.engineRunning ? '24/7 Cloud Auto-Scheduler started.' : 'Auto-Scheduler stopped.',
+        next.engineRunning ? 'System B Auto-Scheduler started.' : 'Auto-Scheduler stopped.',
         next.engineRunning ? 'success' : 'info'
       );
     } catch (err) {
@@ -137,14 +138,13 @@ export default function App() {
 
   return (
     <div className="min-h-screen bg-[#0b1120] text-slate-100 flex">
-      {/* Desktop Sidebar */}
       <aside className="hidden lg:flex lg:flex-col w-64 shrink-0 bg-[#0f172a] border-r border-slate-800">
         <div className="px-5 py-6 border-b border-slate-800">
           <div className="text-base font-bold tracking-tight text-slate-100">
-            Social Auto-Scheduler
+            FB & Insta Auto-Scheduler
           </div>
           <div className="text-xs text-slate-400 mt-1">
-            Cloud Edition · No PC Required
+            System B · Cloud Browser Edition
           </div>
         </div>
 
@@ -175,7 +175,7 @@ export default function App() {
 
         <div className="p-4 border-t border-slate-800 space-y-3">
           <div className="flex items-center justify-between text-xs">
-            <span className="text-slate-400">Cloud Engine</span>
+            <span className="text-slate-400">Engine Quick Control</span>
             <span className={state?.engineRunning ? 'text-emerald-400 font-medium' : 'text-rose-400 font-medium'}>
               {state?.engineRunning ? 'Running' : 'Stopped'}
             </span>
@@ -203,7 +203,6 @@ export default function App() {
         </div>
       </aside>
 
-      {/* Mobile Drawer */}
       {mobileMenuOpen && (
         <div className="fixed inset-0 z-50 lg:hidden flex">
           <div
@@ -212,7 +211,7 @@ export default function App() {
           />
           <aside className="relative z-10 w-72 bg-[#0f172a] border-r border-slate-800 flex flex-col">
             <div className="px-5 py-5 border-b border-slate-800 flex items-center justify-between">
-              <span className="text-sm font-bold text-slate-100">Social Auto-Scheduler</span>
+              <span className="text-sm font-bold text-slate-100">FB & Insta Auto-Scheduler</span>
               <button
                 type="button"
                 onClick={() => setMobileMenuOpen(false)}
@@ -247,7 +246,6 @@ export default function App() {
         </div>
       )}
 
-      {/* Main Content Area */}
       <div className="flex-1 flex flex-col min-w-0">
         <header className="h-16 bg-[#0f172a] border-b border-slate-800 px-4 sm:px-6 flex items-center justify-between gap-4 shrink-0">
           <div className="flex items-center gap-3 min-w-0">

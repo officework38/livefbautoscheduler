@@ -8,3 +8,5 @@ coverage/
 !.env.example
 uploads/
 data/
+browser_profiles/
+execution_proofs/
